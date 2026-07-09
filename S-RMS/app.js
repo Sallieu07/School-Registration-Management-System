@@ -7,77 +7,113 @@
 /* ============================================================
    1. DATA STORE
    ============================================================ */
+const API_ROOT = 'api';
+
 const store = {
-
-  /* ── Demo credentials ── */
-  credentials: {
-    admin:    { password: 'admin123',    role: 'Administrator',  name: 'Admin',    email: 'admin@school.edu'    },
-    staff:    { password: 'staff123',    role: 'Academic Staff', name: 'Staff',    email: 'staff@school.edu'    },
-    lecturer: { password: 'lecturer123', role: 'Lecturer',       name: 'Lecturer', email: 'lecturer@school.edu' },
-    student:  { password: 'student123',  role: 'Student',        name: 'student',  email: 'student@school.edu'  },
-  },
-
-  /* ── Active session ── */
   currentUser: null,
-
-  /* ── Student records ──
-     'student' login maps to STU004 (James Brown) as per the screenshots */
-  students: [
-    { id: 'STU001', name: 'Emma Johnson',    age: 20, grade: 'Year 2', gpa: 3.8,  attendance: 95, status: 'Active' },
-    { id: 'STU002', name: 'Michael Chen',    age: 19, grade: 'Year 1', gpa: 3.6,  attendance: 92, status: 'Active' },
-    { id: 'STU003', name: 'Sarah Williams',  age: 21, grade: 'Year 3', gpa: 3.9,  attendance: 98, status: 'Active' },
-    { id: 'STU004', name: 'James Brown',     age: 20, grade: 'Year 2', gpa: 3.5,  attendance: 88, status: 'Active' },
-    { id: 'STU005', name: 'Olivia Martinez', age: 19, grade: 'Year 1', gpa: 3.7,  attendance: 94, status: 'Active' },
-    { id: 'STU006', name: 'Daniel Lee',      age: 22, grade: 'Year 4', gpa: 3.85, attendance: 96, status: 'Active' },
-  ],
-
-  /* ── Student login links to this record ID ── */
   studentAccountId: 'STU004',
-
-  /* ── Courses ── */
-  courses: [
-    { id: 'CS101',  name: 'Computer Science',        dept: 'Engineering',    credits: 4, instructor: 'Dr. Robert Smith',    enrolled: 45, schedule: 'Mon, Wed, Fri - 9:00 AM',  subjects: ['Programming Fundamentals','Data Structures','Algorithms','Software Engineering'] },
-    { id: 'BA201',  name: 'Business Administration', dept: 'Business',       credits: 3, instructor: 'Prof. Jennifer Davis', enrolled: 52, schedule: 'Tue, Thu - 10:30 AM',       subjects: ['Management Principles','Marketing','Financial Accounting','Business Strategy'] },
-    { id: 'BIO301', name: 'Biology',                 dept: 'Science',        credits: 4, instructor: 'Dr. Amanda Wilson',   enrolled: 38, schedule: 'Mon, Wed - 2:00 PM',         subjects: ['Cell Biology','Genetics','Ecology','Biochemistry'] },
-    { id: 'ME401',  name: 'Mechanical Engineering',  dept: 'Engineering',    credits: 4, instructor: 'Prof. David Kumar',   enrolled: 41, schedule: 'Tue, Thu, Fri - 1:00 PM',    subjects: ['Thermodynamics','Fluid Mechanics','CAD Design','Materials Science'] },
-    { id: 'PSY101', name: 'Psychology',              dept: 'Social Sciences', credits: 3, instructor: 'Dr. Lisa Carter',   enrolled: 60, schedule: 'Mon, Wed - 11:00 AM',         subjects: ['Intro to Psychology','Cognitive Science','Social Psychology','Research Methods'] },
-    { id: 'MATH201',name: 'Mathematics',             dept: 'Science',        credits: 4, instructor: 'Prof. Mark Johnson',  enrolled: 50, schedule: 'Mon, Tue, Thu - 1:00 PM',    subjects: ['Calculus','Linear Algebra','Statistics','Differential Equations'] },
-  ],
-
-  /* ── System users ── */
-  users: [
-    { id: 1, username: 'admin',    email: 'admin@school.edu',    role: 'Administrator',  status: 'Active', lastLogin: '2024-01-15' },
-    { id: 2, username: 'staff',    email: 'staff@school.edu',    role: 'Academic Staff', status: 'Active', lastLogin: '2024-01-14' },
-    { id: 3, username: 'lecturer', email: 'lecturer@school.edu', role: 'Lecturer',       status: 'Active', lastLogin: '2024-01-15' },
-    { id: 4, username: 'student',  email: 'student@school.edu',  role: 'Student',        status: 'Active', lastLogin: '2024-01-15' },
-  ],
-
-  /* ── Attendance records ──
-     { [courseId]: { [date]: { [studentId]: 'Present'|'Absent' } } } */
-  attendance: {
-    'CS101':  { '2024-01-15': { STU001:'Present',STU002:'Present',STU003:'Present',STU004:'Absent', STU005:'Present',STU006:'Present' } },
-    'BA201':  { '2024-01-15': { STU001:'Present',STU002:'Absent', STU003:'Present',STU004:'Present',STU005:'Present',STU006:'Present' } },
-    'BIO301': { '2024-01-15': { STU001:'Present',STU002:'Present',STU003:'Present',STU004:'Present',STU005:'Absent', STU006:'Present' } },
-    'ME401':  { '2024-01-15': { STU001:'Absent', STU002:'Present',STU003:'Present',STU004:'Present',STU005:'Present',STU006:'Present' } },
-    'PSY101': { '2024-01-15': { STU001:'Present',STU002:'Present',STU003:'Absent', STU004:'Present',STU005:'Present',STU006:'Present' } },
-    'MATH201':{ '2024-01-15': { STU001:'Present',STU002:'Present',STU003:'Present',STU004:'Absent', STU005:'Present',STU006:'Present' } },
-  },
-
-  /* ── Results records ──
-     { [courseId]: { [studentId]: { score, grade } } } */
-  results: {
-    'CS101':  { STU004: { score: '82', grade: 'B' } },
-    'BA201':  { STU004: { score: '74', grade: 'C' } },
-    'BIO301': { STU004: { score: '91', grade: 'A' } },
-    'ME401':  { STU004: { score: '67', grade: 'D' } },
-    'PSY101': { STU004: { score: '88', grade: 'B' } },
-    'MATH201':{ STU004: { score: '79', grade: 'C' } },
-  },
-
-  pendingDelete:  null,
-  nextStudentNum: 7,
-  nextUserId:     5,
+  students: [],
+  courses: [],
+  users: [],
+  attendance: {},
+  results: {},
+  pendingDelete: null,
 };
+
+/**
+ * Make a JSON API request and parse the response.
+ * @param {string} path
+ * @param {object} options
+ * @returns {Promise<any>}
+ */
+async function apiRequest(path, options = {}) {
+  let response;
+  try {
+    response = await fetch(path, {
+      headers: { 'Content-Type': 'application/json' },
+      ...options,
+    });
+  } catch (err) {
+    throw new Error('Network error: ' + err.message);
+  }
+
+  const contentType = (response.headers.get('content-type') || '').toLowerCase();
+  let data;
+  if (contentType.includes('application/json')) {
+    try {
+      data = await response.json();
+    } catch (err) {
+      const txt = await response.text();
+      throw new Error('Invalid JSON response from server: ' + txt);
+    }
+  } else {
+    const txt = await response.text();
+    throw new Error('Unexpected server response (not JSON): ' + txt);
+  }
+
+  if (!response.ok || data.success === false) {
+    throw new Error(data.message || 'An API error occurred');
+  }
+  return data;
+}
+
+async function loadStudents() {
+  const data = await apiRequest(`${API_ROOT}/students.php`);
+  store.students = data.students.map(s => ({
+    id: s.student_id || s.id,
+    name: s.name,
+    age: parseInt(s.age, 10),
+    grade: s.grade,
+    gpa: parseFloat(s.gpa),
+    attendance: parseInt(s.attendance, 10),
+    status: s.status,
+  }));
+}
+
+async function loadCourses() {
+  const data = await apiRequest(`${API_ROOT}/courses.php`);
+  store.courses = data.courses.map(c => ({
+    id: c.id,
+    name: c.name,
+    dept: c.dept,
+    credits: parseInt(c.credits, 10),
+    instructor: c.instructor,
+    enrolled: parseInt(c.enrolled, 10),
+    schedule: c.schedule,
+    subjects: Array.isArray(c.subjects) ? c.subjects : [],
+  }));
+}
+
+async function loadUsers() {
+  const data = await apiRequest(`${API_ROOT}/users.php`);
+  store.users = data.users.map(u => ({
+    id: u.id,
+    username: u.username,
+    email: u.email,
+    role: u.role,
+    status: u.status,
+    lastLogin: u.lastLogin,
+  }));
+}
+
+async function loadAttendanceRecords(courseId) {
+  const data = await apiRequest(`${API_ROOT}/attendance.php?course_id=${encodeURIComponent(courseId)}`);
+  const attendance = {};
+  data.attendance.forEach(record => {
+    attendance[record.date] = attendance[record.date] || {};
+    attendance[record.date][record.student_id] = record.status;
+  });
+  return attendance;
+}
+
+async function loadResultsRecords(courseId) {
+  const data = await apiRequest(`${API_ROOT}/results.php?course_id=${encodeURIComponent(courseId)}`);
+  const results = {};
+  data.results.forEach(record => {
+    results[record.student_id] = { score: record.score, grade: record.grade };
+  });
+  return results;
+}
 
 
 /* ============================================================
@@ -201,43 +237,47 @@ document.querySelectorAll('.modal-overlay').forEach(o => {
    4. AUTHENTICATION
    ============================================================ */
 
-function doLogin() {
+async function doLogin() {
   const username = document.getElementById('login-username').value.trim();
   const password = document.getElementById('login-password').value;
   const errEl    = document.getElementById('login-error');
-  const cred     = store.credentials[username];
 
-  if (cred && cred.password === password) {
-    store.currentUser = { username, ...cred };
+  if (!username || !password) {
+    errEl.textContent = 'Please enter both username and password.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  try {
+    const data = await apiRequest(`${API_ROOT}/auth.php`, {
+      method: 'POST',
+      body: JSON.stringify({ username, password }),
+    });
+
+    store.currentUser = { username, ...data.user };
     errEl.style.display = 'none';
 
-    /* ── Update topbar & sidebar with logged-in user info ── */
-    document.getElementById('sidebar-avatar').textContent  = initials(cred.name);
-    document.getElementById('sidebar-name').textContent    = cred.name;
-    document.getElementById('sidebar-role').textContent    = cred.role;
-    document.getElementById('topbar-avatar').textContent   = initials(cred.name);
-    document.getElementById('topbar-username').textContent = username;
+    const user = store.currentUser;
+    document.getElementById('sidebar-avatar').textContent  = initials(user.name);
+    document.getElementById('sidebar-name').textContent    = user.name;
+    document.getElementById('sidebar-role').textContent    = user.role;
+    document.getElementById('topbar-avatar').textContent   = initials(user.name);
+    document.getElementById('topbar-username').textContent = user.username;
 
-    /* ── Pre-fill Settings profile fields ── */
-    document.getElementById('set-username').value = username;
-    document.getElementById('set-email').value    = cred.email || '';
-    /* Role shown as lowercase in settings (matches screenshot: "student", "academic_staff" etc.) */
-    document.getElementById('set-role').value     = cred.role.toLowerCase().replace(/\s+/g, '_');
+    document.getElementById('set-username').value = user.username;
+    document.getElementById('set-email').value    = user.email || '';
+    document.getElementById('set-role').value     = user.role.toLowerCase().replace(/\s+/g, '_');
 
-    /* ── Build role-specific sidebar ── */
-    buildSidebar(cred.role);
+    buildSidebar(user.role);
+    applyRoleRestrictions(user.role);
 
-    /* ── Apply role-specific UI restrictions ── */
-    applyRoleRestrictions(cred.role);
-
-    /* ── Show app, hide login ── */
     document.getElementById('login-page').style.display = 'none';
     document.getElementById('app').style.display        = 'flex';
 
-    /* ── Navigate to dashboard (same for all roles — matches screenshots) ── */
+    await Promise.all([loadStudents(), loadCourses(), loadUsers()]);
     navigate('dashboard');
-
-  } else {
+  } catch (error) {
+    errEl.textContent = error.message || 'Invalid username or password. Please try again.';
     errEl.style.display = 'block';
   }
 }
@@ -472,26 +512,36 @@ function openStudentModal(editId = null) {
 
 function editStudent(id) { openStudentModal(id); }
 
-function saveStudent() {
+async function saveStudent() {
   const name   = document.getElementById('sm-name').value.trim();
-  const age    = parseInt(document.getElementById('sm-age').value);
+  const age    = parseInt(document.getElementById('sm-age').value, 10);
   const grade  = document.getElementById('sm-grade').value;
   const status = document.getElementById('sm-status').value;
   const editId = document.getElementById('sm-edit-id').value;
 
   if (!name || !age) { showToast('Please fill in all required fields.', 'error'); return; }
 
-  if (editId) {
-    Object.assign(store.students.find(x => x.id === editId), { name, age, grade, status });
-    showToast('Student updated successfully!');
-  } else {
-    const newId = 'STU' + String(store.nextStudentNum++).padStart(3, '0');
-    store.students.push({ id: newId, name, age, grade, gpa: 0.0, attendance: 0, status });
-    showToast('Student added successfully!');
+  try {
+    if (editId) {
+      await apiRequest(`${API_ROOT}/students.php`, {
+        method: 'PUT',
+        body: JSON.stringify({ id: editId, name, age, grade, status }),
+      });
+      showToast('Student updated successfully!');
+    } else {
+      await apiRequest(`${API_ROOT}/students.php`, {
+        method: 'POST',
+        body: JSON.stringify({ name, age, grade, status, gpa: 0.0, attendance: 0 }),
+      });
+      showToast('Student added successfully!');
+    }
+    closeModal('student-modal');
+    await loadStudents();
+    renderStudents();
+    renderDashboard();
+  } catch (error) {
+    showToast(error.message, 'error');
   }
-  closeModal('student-modal');
-  renderStudents();
-  renderDashboard();
 }
 
 
@@ -555,27 +605,38 @@ function viewCourseDetails(id) {
   showToast(`📚 ${c.name} — ${c.enrolled} students enrolled`);
 }
 
-function saveCourse() {
+async function saveCourse() {
   const name       = document.getElementById('cm-name').value.trim();
   const code       = document.getElementById('cm-code').value.trim().toUpperCase();
   const dept       = document.getElementById('cm-dept').value.trim();
-  const credits    = parseInt(document.getElementById('cm-credits').value) || 3;
+  const credits    = parseInt(document.getElementById('cm-credits').value, 10) || 3;
   const instructor = document.getElementById('cm-instructor').value.trim();
   const schedule   = document.getElementById('cm-schedule').value.trim();
   const editId     = document.getElementById('cm-edit-id').value;
 
   if (!name || !code) { showToast('Course name and code are required.', 'error'); return; }
 
-  if (editId) {
-    Object.assign(store.courses.find(x => x.id === editId), { name, dept, credits, instructor, schedule });
-    showToast('Course updated successfully!');
-  } else {
-    store.courses.push({ id: code, name, dept, credits, instructor, enrolled: 0, schedule, subjects: [] });
-    showToast('Course added successfully!');
+  try {
+    if (editId) {
+      await apiRequest(`${API_ROOT}/courses.php`, {
+        method: 'PUT',
+        body: JSON.stringify({ id: editId, code, name, dept, credits, instructor, schedule, enrolled: 0 }),
+      });
+      showToast('Course updated successfully!');
+    } else {
+      await apiRequest(`${API_ROOT}/courses.php`, {
+        method: 'POST',
+        body: JSON.stringify({ code, name, dept, credits, instructor, schedule, enrolled: 0 }),
+      });
+      showToast('Course added successfully!');
+    }
+    closeModal('course-modal');
+    await loadCourses();
+    renderCourses();
+    renderDashboard();
+  } catch (error) {
+    showToast(error.message, 'error');
   }
-  closeModal('course-modal');
-  renderCourses();
-  renderDashboard();
 }
 
 
@@ -583,38 +644,43 @@ function saveCourse() {
    11. ATTENDANCE & RESULTS
    ============================================================ */
 
-function renderAttendance() {
+async function renderAttendance() {
   document.getElementById('att-course-select').innerHTML =
     store.courses.map(c => `<option value="${c.id}">${c.name} (${c.id})</option>`).join('');
   document.getElementById('att-date').value = new Date().toISOString().split('T')[0];
-  loadAttendance();
+  await loadAttendance();
 }
 
-function loadAttendance() {
+async function loadAttendance() {
   const courseId = document.getElementById('att-course-select').value;
+  const date     = document.getElementById('att-date').value;
 
-  /* Attendance rows */
+  store.attendance[courseId] = await loadAttendanceRecords(courseId);
+  store.results[courseId] = await loadResultsRecords(courseId);
+
   document.getElementById('attendance-tbody').innerHTML =
-    store.students.map(s => `
-      <tr>
-        <td><strong>${s.id}</strong></td>
-        <td>
-          <div style="display:flex;align-items:center;gap:10px;">
-            <div class="s-avatar" style="width:30px;height:30px;font-size:.72rem;background:${avatarColor(s.name)}">${initials(s.name)}</div>
-            ${s.name}
-          </div>
-        </td>
-        <td>${s.grade}</td>
-        <td>
-          <div class="radio-group">
-            <label class="radio-label"><input type="radio" name="att-${s.id}" value="Present" checked /> Present</label>
-            <label class="radio-label"><input type="radio" name="att-${s.id}" value="Absent"  /> Absent</label>
-          </div>
-        </td>
-      </tr>
-    `).join('');
+    store.students.map(s => {
+      const status = store.attendance[courseId]?.[date]?.[s.id] || 'Present';
+      return `
+        <tr>
+          <td><strong>${s.id}</strong></td>
+          <td>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div class="s-avatar" style="width:30px;height:30px;font-size:.72rem;background:${avatarColor(s.name)}">${initials(s.name)}</div>
+              ${s.name}
+            </div>
+          </td>
+          <td>${s.grade}</td>
+          <td>
+            <div class="radio-group">
+              <label class="radio-label"><input type="radio" name="att-${s.id}" value="Present" ${status === 'Present' ? 'checked' : ''} /> Present</label>
+              <label class="radio-label"><input type="radio" name="att-${s.id}" value="Absent"  ${status === 'Absent' ? 'checked' : ''} /> Absent</label>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
 
-  /* Results rows — pre-fill saved scores */
   document.getElementById('results-tbody').innerHTML =
     store.students.map(s => {
       const saved = store.results[courseId]?.[s.id] || { score: '', grade: '' };
@@ -651,30 +717,52 @@ function autoGrade(input) {
   input.closest('tr').querySelector('[data-field="grade"]').value = isNaN(score) ? '' : scoreToGrade(score);
 }
 
-function saveAttendance() {
+async function saveAttendance() {
   const courseId = document.getElementById('att-course-select').value;
   const date     = document.getElementById('att-date').value;
   if (!date) { showToast('Please select a date first.', 'error'); return; }
-  if (!store.attendance[courseId])       store.attendance[courseId] = {};
-  if (!store.attendance[courseId][date]) store.attendance[courseId][date] = {};
+
+  const records = {};
   store.students.forEach(s => {
     const sel = document.querySelector(`input[name="att-${s.id}"]:checked`);
-    store.attendance[courseId][date][s.id] = sel ? sel.value : 'Absent';
+    records[s.id] = sel ? sel.value : 'Absent';
   });
-  showToast('Attendance saved successfully!');
+
+  try {
+    await apiRequest(`${API_ROOT}/attendance.php`, {
+      method: 'POST',
+      body: JSON.stringify({ course_id: courseId, date, records }),
+    });
+    showToast('Attendance saved successfully!');
+    store.attendance[courseId] = store.attendance[courseId] || {};
+    store.attendance[courseId][date] = records;
+  } catch (error) {
+    showToast(error.message, 'error');
+  }
 }
 
-function saveResults() {
+async function saveResults() {
   const courseId = document.getElementById('att-course-select').value;
-  if (!store.results[courseId]) store.results[courseId] = {};
+  const records = {};
+
   store.students.forEach(s => {
     const scoreEl = document.querySelector(`input[data-sid="${s.id}"][data-field="score"]`);
     const gradeEl = document.querySelector(`input[data-sid="${s.id}"][data-field="grade"]`);
     if (scoreEl?.value !== '') {
-      store.results[courseId][s.id] = { score: scoreEl.value, grade: gradeEl.value };
+      records[s.id] = { score: scoreEl.value, grade: gradeEl.value };
     }
   });
-  showToast('Results saved successfully!');
+
+  try {
+    await apiRequest(`${API_ROOT}/results.php`, {
+      method: 'POST',
+      body: JSON.stringify({ course_id: courseId, records }),
+    });
+    showToast('Results saved successfully!');
+    store.results[courseId] = records;
+  } catch (error) {
+    showToast(error.message, 'error');
+  }
 }
 
 function switchAttTab(tab, btn) {
@@ -740,24 +828,37 @@ function openUserModal(editId = null) {
 
 function editUser(id) { openUserModal(id); }
 
-function saveUser() {
+async function saveUser() {
   const username = document.getElementById('um-username').value.trim();
   const email    = document.getElementById('um-email').value.trim();
   const role     = document.getElementById('um-role').value;
   const status   = document.getElementById('um-status').value;
+  const password = document.getElementById('um-password').value;
   const editId   = document.getElementById('um-edit-id').value;
 
   if (!username || !email) { showToast('Username and email are required.', 'error'); return; }
 
-  if (editId) {
-    Object.assign(store.users.find(x => x.id === parseInt(editId)), { username, email, role, status });
-    showToast('User updated successfully!');
-  } else {
-    store.users.push({ id: store.nextUserId++, username, email, role, status, lastLogin: new Date().toISOString().split('T')[0] });
-    showToast('User added successfully!');
+  try {
+    if (editId) {
+      await apiRequest(`${API_ROOT}/users.php`, {
+        method: 'PUT',
+        body: JSON.stringify({ id: editId, username, email, role, status, password: password || undefined }),
+      });
+      showToast('User updated successfully!');
+    } else {
+      if (!password) { showToast('Password is required for new users.', 'error'); return; }
+      await apiRequest(`${API_ROOT}/users.php`, {
+        method: 'POST',
+        body: JSON.stringify({ username, email, role, status, password }),
+      });
+      showToast('User added successfully!');
+    }
+    closeModal('user-modal');
+    await loadUsers();
+    renderUsers();
+  } catch (error) {
+    showToast(error.message, 'error');
   }
-  closeModal('user-modal');
-  renderUsers();
 }
 
 
@@ -773,12 +874,20 @@ function deleteRecord(type, id) {
   };
   document.getElementById('confirm-message').textContent = msgs[type] || 'Delete this record?';
 
-  store.pendingDelete = () => {
-    if (type === 'student') { store.students = store.students.filter(s => s.id !== id); renderStudents(); renderDashboard(); }
-    if (type === 'course')  { store.courses  = store.courses.filter(c => c.id !== id);  renderCourses(); renderDashboard(); }
-    if (type === 'user')    { store.users    = store.users.filter(u => u.id !== id);    renderUsers(); }
-    showToast('Record deleted successfully.');
-    closeModal('confirm-modal');
+  store.pendingDelete = async () => {
+    try {
+      await apiRequest(`${API_ROOT}/${type === 'student' ? 'students.php' : type === 'course' ? 'courses.php' : 'users.php'}`, {
+        method: 'DELETE',
+        body: JSON.stringify({ id }),
+      });
+      if (type === 'student') { await loadStudents(); renderStudents(); renderDashboard(); }
+      if (type === 'course')  { await loadCourses();  renderCourses();  renderDashboard(); }
+      if (type === 'user')    { await loadUsers();    renderUsers(); }
+      showToast('Record deleted successfully.');
+      closeModal('confirm-modal');
+    } catch (error) {
+      showToast(error.message, 'error');
+    }
   };
   openModal('confirm-modal');
 }
